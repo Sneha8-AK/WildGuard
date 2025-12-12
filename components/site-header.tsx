@@ -17,11 +17,11 @@ export default function SiteHeader() {
         </div>
         
         <nav className="flex items-center gap-6">
-          <Link href="#" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+          <Link href="/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Dashboard
           </Link>
-          <Link href="#" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-            Live Map
+          <Link href="/live-tracking" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+            Live Tracking
           </Link>
           <Link href="#" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Analytics

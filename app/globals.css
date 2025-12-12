@@ -141,3 +141,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom pin marker styles */
+.custom-pin {
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-pin svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
