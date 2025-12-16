@@ -1,5 +1,5 @@
 """
-Demo runner with preset test cases for WildGuard
+ runner with preset test cases for WildGuard
 """
 
 from pathlib import Path

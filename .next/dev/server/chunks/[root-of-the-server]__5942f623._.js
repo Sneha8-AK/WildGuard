@@ -88,28 +88,36 @@ async function POST(request) {
         const formData = await request.formData();
         const file = formData.get("file");
         if (!file) {
+            console.error("No file provided in request");
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 error: "No file provided"
             }, {
                 status: 400
             });
         }
+        console.log("Processing file:", file.name, "Type:", file.type, "Size:", file.size);
         // Save file temporarily
         const buffer = Buffer.from(await file.arrayBuffer());
         const tempDir = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$os__$5b$external$5d$__$28$os$2c$__cjs$29$__["tmpdir"])();
         const fileName = `upload-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
         tempFilePath = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["join"])(tempDir, fileName);
+        console.log("Saving file to:", tempFilePath);
         await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$fs$2f$promises__$5b$external$5d$__$28$fs$2f$promises$2c$__cjs$29$__["writeFile"])(tempFilePath, buffer);
         // Run Python detection script
         const projectRoot = process.cwd();
         const pythonScript = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["join"])(projectRoot, "detect_cli.py");
         const pythonPath = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["join"])(projectRoot, "venv", "bin", "python");
+        console.log("Project root:", projectRoot);
+        console.log("Python path:", pythonPath);
+        console.log("Script path:", pythonScript);
         const detectionResult = await runPythonScript(pythonPath, pythonScript, tempFilePath);
+        console.log("Detection successful:", detectionResult);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(detectionResult);
     } catch (error) {
         console.error("Detection error:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: "Detection failed: " + error.message
+            error: "Detection failed: " + errorMessage
         }, {
             status: 500
         });
@@ -118,6 +126,7 @@ async function POST(request) {
         if (tempFilePath) {
             try {
                 await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$fs$2f$promises__$5b$external$5d$__$28$fs$2f$promises$2c$__cjs$29$__["unlink"])(tempFilePath);
+                console.log("Cleaned up temp file:", tempFilePath);
             } catch (e) {
                 console.error("Failed to delete temp file:", e);
             }
@@ -126,6 +135,10 @@ async function POST(request) {
 }
 function runPythonScript(pythonPath, scriptPath, imagePath) {
     return new Promise((resolve, reject)=>{
+        console.log("Spawning Python process:", pythonPath, [
+            scriptPath,
+            imagePath
+        ]);
         const process1 = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$child_process__$5b$external$5d$__$28$child_process$2c$__cjs$29$__["spawn"])(pythonPath, [
             scriptPath,
             imagePath
@@ -133,18 +146,24 @@ function runPythonScript(pythonPath, scriptPath, imagePath) {
         let stdoutData = "";
         let stderrData = "";
         process1.stdout.on("data", (data)=>{
-            stdoutData += data.toString();
+            const output = data.toString();
+            console.log("Python stdout:", output);
+            stdoutData += output;
         });
         process1.stderr.on("data", (data)=>{
-            stderrData += data.toString();
+            const error = data.toString();
+            console.error("Python stderr:", error);
+            stderrData += error;
         });
         process1.on("close", (code)=>{
+            console.log("Python process exited with code:", code);
             if (code !== 0) {
                 console.error("Python script error:", stderrData);
-                reject(new Error(`Python script exited with code ${code}: ${stderrData}`));
+                reject(new Error(`Python script exited with code ${code}: ${stderrData || "No error message"}`));
                 return;
             }
             try {
+                console.log("Parsing Python output:", stdoutData.substring(0, 200));
                 const result = JSON.parse(stdoutData);
                 if (result.error) {
                     reject(new Error(result.error));
@@ -153,8 +172,12 @@ function runPythonScript(pythonPath, scriptPath, imagePath) {
                 }
             } catch (e) {
                 console.error("Failed to parse Python output:", stdoutData);
-                reject(new Error("Failed to parse detection results"));
+                reject(new Error("Failed to parse detection results: " + (e instanceof Error ? e.message : "Unknown error")));
             }
+        });
+        process1.on("error", (err)=>{
+            console.error("Failed to start Python process:", err);
+            reject(new Error("Failed to start Python process: " + err.message));
         });
     });
 }

@@ -25,13 +25,23 @@ export default function ResultsPanel({ detections, selectedDetection, onSelect }
               }`}
             >
               <p className="text-sm font-medium text-foreground">{det.timestamp}</p>
-              <p className="text-xs text-muted-foreground">{det.detections.length} animals</p>
-              <div className="mt-2 flex gap-1">
-                {det.detections.map((d: any) => (
-                  <span key={d.id} className="inline-block rounded bg-primary/10 px-2 py-1 text-xs text-primary">
-                    {d.animal}
+              <p className="text-xs text-muted-foreground">
+                {det.detections.length > 0 
+                  ? `${det.detections.length} object${det.detections.length !== 1 ? 's' : ''} detected`
+                  : 'No objects detected'}
+              </p>
+              <div className="mt-2 flex gap-1 flex-wrap">
+                {det.detections.length > 0 ? (
+                  det.detections.map((d: any) => (
+                    <span key={d.id} className="inline-block rounded bg-primary/10 px-2 py-1 text-xs text-primary">
+                      {d.animal}
+                    </span>
+                  ))
+                ) : (
+                  <span className="inline-block rounded bg-gray-100 px-2 py-1 text-xs text-gray-500">
+                    Empty
                   </span>
-                ))}
+                )}
               </div>
             </button>
           ))

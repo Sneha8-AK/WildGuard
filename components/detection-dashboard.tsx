@@ -70,6 +70,9 @@ const getRiskIcon = (riskLevel: string) => {
 export default function DetectionDashboard({ detection }: DetectionDashboardProps) {
   const RiskIcon = getRiskIcon(detection.riskLevel)
 
+  // Check if there are any detections
+  const hasDetections = detection.detections && detection.detections.length > 0
+
   return (
     <div className="space-y-6">
       {/* Image with Detections */}
@@ -81,7 +84,7 @@ export default function DetectionDashboard({ detection }: DetectionDashboardProp
             className="h-full w-full object-cover"
           />
           {/* Bounding Boxes */}
-          {detection.detections.map((det) => (
+          {hasDetections && detection.detections.map((det) => (
             <div
               key={det.id}
               className="absolute border-2 border-orange-400"
@@ -97,6 +100,16 @@ export default function DetectionDashboard({ detection }: DetectionDashboardProp
               </div>
             </div>
           ))}
+          
+          {/* No Detections Overlay */}
+          {!hasDetections && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <div className="rounded-lg bg-white p-6 text-center shadow-lg">
+                <p className="text-lg font-semibold text-gray-900">No Objects Detected</p>
+                <p className="mt-2 text-sm text-gray-600">Try uploading a different image</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -108,30 +121,35 @@ export default function DetectionDashboard({ detection }: DetectionDashboardProp
             <h3 className={`text-lg font-bold ${getRiskTextColor(detection.riskLevel)}`}>
               Risk Level: {detection.riskLevel.toUpperCase()}
             </h3>
-            <p className={`mt-1 text-sm ${getRiskTextColor(detection.riskLevel)}`}>Detected at {detection.timestamp}</p>
+            <p className={`mt-1 text-sm ${getRiskTextColor(detection.riskLevel)}`}>
+              Detected at {detection.timestamp}
+              {hasDetections && ` - ${detection.detections.length} object${detection.detections.length !== 1 ? 's' : ''} found`}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Detections Grid */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {detection.detections.map((det) => (
-          <div key={det.id} className="rounded-lg border border-border bg-card p-4">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="font-semibold text-foreground">{det.animal}</p>
-                <p className="text-sm text-muted-foreground">Confidence</p>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-primary">{det.confidence.toFixed(1)}%</p>
-                <div className="mt-1 h-2 w-24 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full bg-primary" style={{ width: `${det.confidence}%` }} />
+      {/* Detections Grid - Only show if there are detections */}
+      {hasDetections && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {detection.detections.map((det) => (
+            <div key={det.id} className="rounded-lg border border-border bg-card p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="font-semibold text-foreground">{det.animal}</p>
+                  <p className="text-sm text-muted-foreground">Confidence</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-primary">{det.confidence.toFixed(1)}%</p>
+                  <div className="mt-1 h-2 w-24 overflow-hidden rounded-full bg-muted">
+                    <div className="h-full bg-primary" style={{ width: `${det.confidence}%` }} />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Metrics */}
       <div className="grid gap-4 sm:grid-cols-3">

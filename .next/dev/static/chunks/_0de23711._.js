@@ -58,6 +58,8 @@ const getRiskIcon = (riskLevel)=>{
 };
 function DetectionDashboard({ detection }) {
     const RiskIcon = getRiskIcon(detection.riskLevel);
+    // Check if there are any detections
+    const hasDetections = detection.detections && detection.detections.length > 0;
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "space-y-6",
         children: [
@@ -72,10 +74,10 @@ function DetectionDashboard({ detection }) {
                             className: "h-full w-full object-cover"
                         }, void 0, false, {
                             fileName: "[project]/components/detection-dashboard.tsx",
-                            lineNumber: 78,
+                            lineNumber: 81,
                             columnNumber: 11
                         }, this),
-                        detection.detections.map((det)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        hasDetections && detection.detections.map((det)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "absolute border-2 border-orange-400",
                                 style: {
                                     left: `${det.bbox.x}px`,
@@ -93,23 +95,55 @@ function DetectionDashboard({ detection }) {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/detection-dashboard.tsx",
-                                    lineNumber: 95,
+                                    lineNumber: 98,
                                     columnNumber: 15
                                 }, this)
                             }, det.id, false, {
                                 fileName: "[project]/components/detection-dashboard.tsx",
-                                lineNumber: 85,
+                                lineNumber: 88,
                                 columnNumber: 13
-                            }, this))
+                            }, this)),
+                        !hasDetections && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "absolute inset-0 flex items-center justify-center bg-black/50",
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "rounded-lg bg-white p-6 text-center shadow-lg",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-lg font-semibold text-gray-900",
+                                        children: "No Objects Detected"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/detection-dashboard.tsx",
+                                        lineNumber: 108,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "mt-2 text-sm text-gray-600",
+                                        children: "Try uploading a different image"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/detection-dashboard.tsx",
+                                        lineNumber: 109,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/detection-dashboard.tsx",
+                                lineNumber: 107,
+                                columnNumber: 15
+                            }, this)
+                        }, void 0, false, {
+                            fileName: "[project]/components/detection-dashboard.tsx",
+                            lineNumber: 106,
+                            columnNumber: 13
+                        }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/detection-dashboard.tsx",
-                    lineNumber: 77,
+                    lineNumber: 80,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/detection-dashboard.tsx",
-                lineNumber: 76,
+                lineNumber: 79,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -121,7 +155,7 @@ function DetectionDashboard({ detection }) {
                             className: `h-6 w-6 flex-shrink-0 ${getRiskTextColor(detection.riskLevel)}`
                         }, void 0, false, {
                             fileName: "[project]/components/detection-dashboard.tsx",
-                            lineNumber: 106,
+                            lineNumber: 119,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -135,38 +169,39 @@ function DetectionDashboard({ detection }) {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/detection-dashboard.tsx",
-                                    lineNumber: 108,
+                                    lineNumber: 121,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                     className: `mt-1 text-sm ${getRiskTextColor(detection.riskLevel)}`,
                                     children: [
                                         "Detected at ",
-                                        detection.timestamp
+                                        detection.timestamp,
+                                        hasDetections && ` - ${detection.detections.length} object${detection.detections.length !== 1 ? 's' : ''} found`
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/detection-dashboard.tsx",
-                                    lineNumber: 111,
+                                    lineNumber: 124,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/detection-dashboard.tsx",
-                            lineNumber: 107,
+                            lineNumber: 120,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/detection-dashboard.tsx",
-                    lineNumber: 105,
+                    lineNumber: 118,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/detection-dashboard.tsx",
-                lineNumber: 104,
+                lineNumber: 117,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            hasDetections && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "grid gap-4 sm:grid-cols-2",
                 children: detection.detections.map((det)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "rounded-lg border border-border bg-card p-4",
@@ -180,22 +215,22 @@ function DetectionDashboard({ detection }) {
                                             children: det.animal
                                         }, void 0, false, {
                                             fileName: "[project]/components/detection-dashboard.tsx",
-                                            lineNumber: 122,
-                                            columnNumber: 17
+                                            lineNumber: 139,
+                                            columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-sm text-muted-foreground",
                                             children: "Confidence"
                                         }, void 0, false, {
                                             fileName: "[project]/components/detection-dashboard.tsx",
-                                            lineNumber: 123,
-                                            columnNumber: 17
+                                            lineNumber: 140,
+                                            columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/detection-dashboard.tsx",
-                                    lineNumber: 121,
-                                    columnNumber: 15
+                                    lineNumber: 138,
+                                    columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "text-right",
@@ -208,8 +243,8 @@ function DetectionDashboard({ detection }) {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/detection-dashboard.tsx",
-                                            lineNumber: 126,
-                                            columnNumber: 17
+                                            lineNumber: 143,
+                                            columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "mt-1 h-2 w-24 overflow-hidden rounded-full bg-muted",
@@ -220,35 +255,35 @@ function DetectionDashboard({ detection }) {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/components/detection-dashboard.tsx",
-                                                lineNumber: 128,
-                                                columnNumber: 19
+                                                lineNumber: 145,
+                                                columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/detection-dashboard.tsx",
-                                            lineNumber: 127,
-                                            columnNumber: 17
+                                            lineNumber: 144,
+                                            columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/detection-dashboard.tsx",
-                                    lineNumber: 125,
-                                    columnNumber: 15
+                                    lineNumber: 142,
+                                    columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/detection-dashboard.tsx",
-                            lineNumber: 120,
-                            columnNumber: 13
+                            lineNumber: 137,
+                            columnNumber: 15
                         }, this)
                     }, det.id, false, {
                         fileName: "[project]/components/detection-dashboard.tsx",
-                        lineNumber: 119,
-                        columnNumber: 11
+                        lineNumber: 136,
+                        columnNumber: 13
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/components/detection-dashboard.tsx",
-                lineNumber: 117,
-                columnNumber: 7
+                lineNumber: 134,
+                columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "grid gap-4 sm:grid-cols-3",
@@ -261,7 +296,7 @@ function DetectionDashboard({ detection }) {
                                 children: "Vehicle Speed"
                             }, void 0, false, {
                                 fileName: "[project]/components/detection-dashboard.tsx",
-                                lineNumber: 139,
+                                lineNumber: 157,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -272,13 +307,13 @@ function DetectionDashboard({ detection }) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/detection-dashboard.tsx",
-                                lineNumber: 140,
+                                lineNumber: 158,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/detection-dashboard.tsx",
-                        lineNumber: 138,
+                        lineNumber: 156,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -289,7 +324,7 @@ function DetectionDashboard({ detection }) {
                                 children: "Crossing Probability"
                             }, void 0, false, {
                                 fileName: "[project]/components/detection-dashboard.tsx",
-                                lineNumber: 143,
+                                lineNumber: 161,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -300,13 +335,13 @@ function DetectionDashboard({ detection }) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/detection-dashboard.tsx",
-                                lineNumber: 144,
+                                lineNumber: 162,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/detection-dashboard.tsx",
-                        lineNumber: 142,
+                        lineNumber: 160,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -317,7 +352,7 @@ function DetectionDashboard({ detection }) {
                                 children: "Distance to Road"
                             }, void 0, false, {
                                 fileName: "[project]/components/detection-dashboard.tsx",
-                                lineNumber: 147,
+                                lineNumber: 165,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -328,25 +363,25 @@ function DetectionDashboard({ detection }) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/detection-dashboard.tsx",
-                                lineNumber: 148,
+                                lineNumber: 166,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/detection-dashboard.tsx",
-                        lineNumber: 146,
+                        lineNumber: 164,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/detection-dashboard.tsx",
-                lineNumber: 137,
+                lineNumber: 155,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/detection-dashboard.tsx",
-        lineNumber: 74,
+        lineNumber: 77,
         columnNumber: 5
     }, this);
 }
@@ -545,28 +580,32 @@ function ResultsPanel({ detections, selectedDetection, onSelect }) {
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                 className: "text-xs text-muted-foreground",
-                                children: [
-                                    det.detections.length,
-                                    " animals"
-                                ]
-                            }, void 0, true, {
+                                children: det.detections.length > 0 ? `${det.detections.length} object${det.detections.length !== 1 ? 's' : ''} detected` : 'No objects detected'
+                            }, void 0, false, {
                                 fileName: "[project]/components/results-panel.tsx",
                                 lineNumber: 28,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "mt-2 flex gap-1",
-                                children: det.detections.map((d)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "mt-2 flex gap-1 flex-wrap",
+                                children: det.detections.length > 0 ? det.detections.map((d)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         className: "inline-block rounded bg-primary/10 px-2 py-1 text-xs text-primary",
                                         children: d.animal
                                     }, d.id, false, {
                                         fileName: "[project]/components/results-panel.tsx",
-                                        lineNumber: 31,
-                                        columnNumber: 19
-                                    }, this))
+                                        lineNumber: 36,
+                                        columnNumber: 21
+                                    }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "inline-block rounded bg-gray-100 px-2 py-1 text-xs text-gray-500",
+                                    children: "Empty"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/results-panel.tsx",
+                                    lineNumber: 41,
+                                    columnNumber: 19
+                                }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/results-panel.tsx",
-                                lineNumber: 29,
+                                lineNumber: 33,
                                 columnNumber: 15
                             }, this)
                         ]
@@ -1071,24 +1110,37 @@ function Home() {
         const formData = new FormData();
         formData.append("file", file);
         try {
+            console.log("Uploading file:", file.name, "Size:", file.size);
             const response = await fetch("/api/detect", {
                 method: "POST",
                 body: formData
             });
+            console.log("Response status:", response.status);
             if (!response.ok) {
-                throw new Error("Detection failed");
+                const errorData = await response.json().catch(()=>({
+                        error: "Unknown error"
+                    }));
+                console.error("Detection failed:", errorData);
+                alert(`Detection failed: ${errorData.error || "Unknown error"}`);
+                throw new Error(errorData.error || "Detection failed");
             }
             const result = await response.json();
+            console.log("Detection result:", result);
+            if (!result.detections || result.detections.length === 0) {
+                console.warn("No detections found in the image");
+                alert("No animals detected in the image. Try uploading a different image.");
+            }
             const newDetection = {
                 id: Date.now(),
                 image: URL.createObjectURL(file),
                 timestamp: new Date().toLocaleTimeString(),
-                detections: result.detections,
+                detections: result.detections || [],
                 vehicleSpeed: result.vehicleSpeed || 65,
-                riskLevel: result.riskLevel,
-                crossingProbability: result.crossingProbability,
-                distanceToRoad: result.distanceToRoad
+                riskLevel: result.riskLevel || "safe",
+                crossingProbability: result.crossingProbability || 0,
+                distanceToRoad: result.distanceToRoad || 100
             };
+            console.log("New detection created:", newDetection);
             setDetections([
                 newDetection,
                 ...detections
@@ -1096,6 +1148,7 @@ function Home() {
             setSelectedDetection(newDetection);
         } catch (error) {
             console.error("Error during detection:", error);
+            alert(`Error: ${error instanceof Error ? error.message : "Unknown error occurred"}`);
         } finally{
             setIsLoading(false);
         }
@@ -1107,12 +1160,12 @@ function Home() {
                 detection: selectedDetection
             }, void 0, false, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 67,
+                lineNumber: 92,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$site$2d$header$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 68,
+                lineNumber: 93,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -1127,19 +1180,20 @@ function Home() {
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
                                         className: "text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl md:text-6xl",
                                         children: [
-                                            "AI-Powered ",
+                                            "AI-Powered",
+                                            " ",
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 className: "text-blue-600",
                                                 children: "Wildlife Protection"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/page.tsx",
-                                                lineNumber: 75,
-                                                columnNumber: 26
+                                                lineNumber: 101,
+                                                columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/page.tsx",
-                                        lineNumber: 74,
+                                        lineNumber: 99,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1147,13 +1201,13 @@ function Home() {
                                         children: "Real-time detection and risk assessment system to prevent wildlife-vehicle collisions. Upload an image to analyze potential crossing risks instantly."
                                     }, void 0, false, {
                                         fileName: "[project]/app/page.tsx",
-                                        lineNumber: 77,
+                                        lineNumber: 103,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/page.tsx",
-                                lineNumber: 73,
+                                lineNumber: 98,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1165,23 +1219,23 @@ function Home() {
                                         isLoading: isLoading
                                     }, void 0, false, {
                                         fileName: "[project]/app/page.tsx",
-                                        lineNumber: 85,
+                                        lineNumber: 112,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/page.tsx",
-                                    lineNumber: 84,
+                                    lineNumber: 111,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/page.tsx",
-                                lineNumber: 83,
+                                lineNumber: 110,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/page.tsx",
-                        lineNumber: 72,
+                        lineNumber: 97,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1189,22 +1243,22 @@ function Home() {
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "aspect-[1155/678] w-[72.1875rem] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20",
                             style: {
-                                clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)'
+                                clipPath: "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
                             }
                         }, void 0, false, {
                             fileName: "[project]/app/page.tsx",
-                            lineNumber: 92,
+                            lineNumber: 122,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/page.tsx",
-                        lineNumber: 91,
+                        lineNumber: 121,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 71,
+                lineNumber: 96,
                 columnNumber: 7
             }, this),
             (selectedDetection || detections.length > 0) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -1220,7 +1274,7 @@ function Home() {
                                     children: "Analysis Dashboard"
                                 }, void 0, false, {
                                     fileName: "[project]/app/page.tsx",
-                                    lineNumber: 103,
+                                    lineNumber: 137,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1231,13 +1285,13 @@ function Home() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/page.tsx",
-                                    lineNumber: 104,
+                                    lineNumber: 140,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/page.tsx",
-                            lineNumber: 102,
+                            lineNumber: 136,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1255,12 +1309,12 @@ function Home() {
                                                     children: "Live Detection Feed"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/page.tsx",
-                                                    lineNumber: 115,
+                                                    lineNumber: 151,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/page.tsx",
-                                                lineNumber: 114,
+                                                lineNumber: 150,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1269,18 +1323,18 @@ function Home() {
                                                     detection: selectedDetection
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/page.tsx",
-                                                    lineNumber: 118,
+                                                    lineNumber: 156,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/page.tsx",
-                                                lineNumber: 117,
+                                                lineNumber: 155,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/page.tsx",
-                                        lineNumber: 113,
+                                        lineNumber: 149,
                                         columnNumber: 19
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "flex h-64 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/50",
@@ -1289,17 +1343,17 @@ function Home() {
                                             children: "Select a detection to view details"
                                         }, void 0, false, {
                                             fileName: "[project]/app/page.tsx",
-                                            lineNumber: 123,
+                                            lineNumber: 161,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/page.tsx",
-                                        lineNumber: 122,
+                                        lineNumber: 160,
                                         columnNumber: 19
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/page.tsx",
-                                    lineNumber: 111,
+                                    lineNumber: 147,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1309,7 +1363,7 @@ function Home() {
                                             detection: selectedDetection
                                         }, void 0, false, {
                                             fileName: "[project]/app/page.tsx",
-                                            lineNumber: 130,
+                                            lineNumber: 170,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$results$2d$panel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -1318,36 +1372,36 @@ function Home() {
                                             onSelect: setSelectedDetection
                                         }, void 0, false, {
                                             fileName: "[project]/app/page.tsx",
-                                            lineNumber: 131,
+                                            lineNumber: 171,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/page.tsx",
-                                    lineNumber: 129,
+                                    lineNumber: 169,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/page.tsx",
-                            lineNumber: 109,
+                            lineNumber: 145,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/page.tsx",
-                    lineNumber: 101,
+                    lineNumber: 135,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 100,
+                lineNumber: 134,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/page.tsx",
-        lineNumber: 66,
+        lineNumber: 91,
         columnNumber: 5
     }, this);
 }
