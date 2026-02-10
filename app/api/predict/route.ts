@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { spawn } from "child_process";
 import path from "path";
+import fs from "fs";
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,9 +31,12 @@ export async function POST(request: NextRequest) {
 
     // Call Python prediction script
     const scriptPath = path.join(process.cwd(), "predict_api.py");
+    const venvPythonPath = path.join(process.cwd(), "venv", "bin", "python3");
 
     return new Promise((resolve) => {
-      const python = spawn("python3", [scriptPath]);
+      // Use venv python if it exists, otherwise fallback to system python3
+      const pythonExe = fs.existsSync(venvPythonPath) ? venvPythonPath : "python3";
+      const python = spawn(pythonExe, [scriptPath]);
 
       let dataString = "";
       let errorString = "";
@@ -91,7 +95,9 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     message: "Animal Behavior Prediction API",
-    version: "1.0.0",
+    version: "1.2.0",
+    model: "Voting Ensemble (HGB + RF + ET)",
+    accuracy: "96.06%",
     endpoints: {
       POST: "/api/predict",
       description: "Predict animal crossing risk based on behavioral data",

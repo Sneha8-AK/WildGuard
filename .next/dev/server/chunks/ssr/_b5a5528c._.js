@@ -90,7 +90,7 @@ function DetectionDashboard({ detection }) {
                                     children: [
                                         det.animal,
                                         " ",
-                                        (det.confidence * 100).toFixed(0),
+                                        det.confidence.toFixed(0),
                                         "%"
                                     ]
                                 }, void 0, true, {

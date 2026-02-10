@@ -83,6 +83,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../../app/api/live-tracking/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/live-tracking">> = Specific
+  const handler = {} as typeof import("../../../app/api/live-tracking/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../../app/api/predict/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/predict">> = Specific

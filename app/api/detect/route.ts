@@ -3,108 +3,110 @@ import { writeFile, unlink } from "fs/promises"
 import { join } from "path"
 import { tmpdir } from "os"
 import { spawn } from "child_process"
-import path from "path"
+import fs from "fs"
 
-// This uses the local YOLO Python script for accurate wildlife detection
+/**
+ * WildGuard - Image Detection API
+ * Handles multi-part file uploads and executes the Python detection suite
+ */
 export async function POST(request: NextRequest) {
   let tempFilePath = ""
+  
   try {
     const formData = await request.formData()
     const file = formData.get("file") as File
+    const customSpeed = formData.get("vehicleSpeed")?.toString()
 
     if (!file) {
-      console.error("No file provided in request")
       return NextResponse.json({ error: "No file provided" }, { status: 400 })
     }
 
-    console.log("Processing file:", file.name, "Type:", file.type, "Size:", file.size)
-
-    // Save file temporarily
+    // Prepare temporary storage for the image
     const buffer = Buffer.from(await file.arrayBuffer())
     const tempDir = tmpdir()
-    const fileName = `upload-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`
+    const fileName = `wildguard-upload-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`
     tempFilePath = join(tempDir, fileName)
     
-    console.log("Saving file to:", tempFilePath)
     await writeFile(tempFilePath, buffer)
 
-    // Run Python detection script
+    // Dynamic environment paths
     const projectRoot = process.cwd()
     const pythonScript = join(projectRoot, "detect_cli.py")
-    const pythonPath = join(projectRoot, "venv", "bin", "python")
-
-    console.log("Project root:", projectRoot)
-    console.log("Python path:", pythonPath)
-    console.log("Script path:", pythonScript)
-
-    const detectionResult = await runPythonScript(pythonPath, pythonScript, tempFilePath)
     
-    console.log("Detection successful:", detectionResult)
+    // Check for venv python, fallback to system python3
+    const venvPath = join(projectRoot, "venv", "bin", "python3")
+    const pythonExe = fs.existsSync(venvPath) ? venvPath : "python3"
+
+    // Execute detection with optional parameters
+    const args = [pythonScript, tempFilePath]
+    if (customSpeed) args.push(customSpeed)
+
+    const detectionResult = await runDetectionProcess(pythonExe, args)
+    
     return NextResponse.json(detectionResult)
 
   } catch (error) {
-    console.error("Detection error:", error)
-    const errorMessage = error instanceof Error ? error.message : "Unknown error"
-    return NextResponse.json({ error: "Detection failed: " + errorMessage }, { status: 500 })
+    console.error("Critical detection error:", error)
+    return NextResponse.json({ 
+      error: "Detection failed", 
+      details: error instanceof Error ? error.message : "Internal system failure" 
+    }, { status: 500 })
   } finally {
-    // Cleanup temp file
-    if (tempFilePath) {
+    // Immediate cleanup of sensitive/large temp data
+    if (tempFilePath && fs.existsSync(tempFilePath)) {
       try {
         await unlink(tempFilePath)
-        console.log("Cleaned up temp file:", tempFilePath)
       } catch (e) {
-        console.error("Failed to delete temp file:", e)
+        console.error("Cleanup warning:", e)
       }
     }
   }
 }
 
-function runPythonScript(pythonPath: string, scriptPath: string, imagePath: string): Promise<any> {
+/**
+ * Manages the external Python process execution and output parsing
+ */
+function runDetectionProcess(pythonPath: string, args: string[]): Promise<any> {
   return new Promise((resolve, reject) => {
-    console.log("Spawning Python process:", pythonPath, [scriptPath, imagePath])
-    const process = spawn(pythonPath, [scriptPath, imagePath])
+    const process = spawn(pythonPath, args)
     
     let stdoutData = ""
     let stderrData = ""
 
     process.stdout.on("data", (data) => {
-      const output = data.toString()
-      console.log("Python stdout:", output)
-      stdoutData += output
+      stdoutData += data.toString()
     })
 
     process.stderr.on("data", (data) => {
-      const error = data.toString()
-      console.error("Python stderr:", error)
-      stderrData += error
+      stderrData += data.toString()
     })
 
     process.on("close", (code) => {
-      console.log("Python process exited with code:", code)
-      
       if (code !== 0) {
-        console.error("Python script error:", stderrData)
-        reject(new Error(`Python script exited with code ${code}: ${stderrData || "No error message"}`))
+        reject(new Error(`Process terminated with code ${code}. Error: ${stderrData.trim()}`))
         return
       }
 
       try {
-        console.log("Parsing Python output:", stdoutData.substring(0, 200))
-        const result = JSON.parse(stdoutData)
+        // Find the JSON block in stdout in case of library warnings printed to stdout
+        const jsonMatch = stdoutData.match(/\{[\s\S]*\}/)
+        if (!jsonMatch) {
+          throw new Error("No valid JSON output received from detection script")
+        }
+        
+        const result = JSON.parse(jsonMatch[0])
         if (result.error) {
           reject(new Error(result.error))
         } else {
           resolve(result)
         }
       } catch (e) {
-        console.error("Failed to parse Python output:", stdoutData)
-        reject(new Error("Failed to parse detection results: " + (e instanceof Error ? e.message : "Unknown error")))
+        reject(new Error("Response parsing failed: " + (e instanceof Error ? e.message : "Format error")))
       }
     })
 
     process.on("error", (err) => {
-      console.error("Failed to start Python process:", err)
-      reject(new Error("Failed to start Python process: " + err.message))
+      reject(new Error("Process spawn failure: " + err.message))
     })
   })
 }

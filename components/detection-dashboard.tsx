@@ -96,7 +96,7 @@ export default function DetectionDashboard({ detection }: DetectionDashboardProp
               }}
             >
               <div className="bg-orange-400 px-2 py-1 text-xs font-bold text-white">
-                {det.animal} {(det.confidence * 100).toFixed(0)}%
+                {det.animal} {det.confidence.toFixed(0)}%
               </div>
             </div>
           ))}

@@ -12,11 +12,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, RotateCcw, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 
 export default function LiveTrackingPage() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  
   const animalTypes = [
     "Tiger",
     "Leopard",
@@ -104,43 +102,7 @@ export default function LiveTrackingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar Controls */}
           <div className="lg:col-span-1 space-y-4">
-            {/* Playback Controls */}
-            <Card className="shadow-lg border-green-200">
-              <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
-                <CardTitle className="flex items-center gap-2 text-green-800">
-                  <Play className="w-5 h-5" />
-                  Playback Controls
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6 space-y-3">
-                <Button
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                  size="lg"
-                >
-                  {isPlaying ? (
-                    <>
-                      <Pause className="w-4 h-4 mr-2" />
-                      Pause Tracking
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4 mr-2" />
-                      Start Tracking
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full border-green-300 text-green-700 hover:bg-green-50"
-                  onClick={() => window.location.reload()}
-                >
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Reset
-                </Button>
-              </CardContent>
-            </Card>
-
+            
             {/* Animal Filter */}
             <Card className="shadow-lg border-green-200">
               <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
@@ -236,7 +198,6 @@ export default function LiveTrackingPage() {
               <div className="h-[800px] relative">
                 <LiveTrackingMap
                   selectedAnimals={selectedAnimals}
-                  isPlaying={isPlaying}
                   animalColors={animalColors}
                 />
               </div>

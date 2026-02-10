@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -29,7 +29,6 @@ interface AnimalData {
 
 interface LiveTrackingMapProps {
   selectedAnimals: string[];
-  isPlaying: boolean;
   animalColors: Record<string, string>;
 }
 
@@ -81,7 +80,7 @@ const createPinIcon = (color: string = '#EF4444') => {
   return L.divIcon({
     className: 'custom-pin',
     html: `
-      <div style="position: relative; width: 30px; height: 40px;">
+      <div style="position: relative; width: 30px; height: 40px; transition: transform 0.5s linear;">
         <svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <filter id="shadow-${color.replace('#', '')}" x="-50%" y="-50%" width="200%" height="200%">
@@ -116,142 +115,79 @@ const createPinIcon = (color: string = '#EF4444') => {
 
 export default function LiveTrackingMap({ 
   selectedAnimals, 
-  isPlaying,
   animalColors 
 }: LiveTrackingMapProps) {
-  const [animalData, setAnimalData] = useState<AnimalData[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [currentAnimals, setCurrentAnimals] = useState<Record<string, AnimalData>>({});
   const [animalPaths, setAnimalPaths] = useState<Record<string, [number, number][]>>({});
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<string>("");
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Load CSV data
+  // Poll for live data
   useEffect(() => {
-    fetch('/forest_animal_movement_dataset.csv')
-      .then(res => res.text())
-      .then(data => {
-        const lines = data.split('\n').slice(1); // Skip header
-        const parsed: AnimalData[] = [];
+    const fetchData = async () => {
+      try {
+        const res = await fetch('/api/live-tracking');
+        if (!res.ok) throw new Error('Failed to fetch');
+        const data = await res.json();
         
-        lines.forEach(line => {
-          const parts = line.split(',');
-          if (parts.length >= 11) {
-            parsed.push({
-              record_id: parseInt(parts[0]),
-              animal_type: parts[1],
-              date: parts[2],
-              time: parts[3],
-              location_x: parseFloat(parts[4]),
-              location_y: parseFloat(parts[5]),
-              movement_speed_mps: parseFloat(parts[6]),
-              activity: parts[7],
-              temperature_c: parseFloat(parts[8]),
-              is_near_water: parts[9] === 'True',
-              steps_taken: parseInt(parts[10])
+        if (data.animals) {
+          setIsConnected(true);
+          setLastUpdated(new Date().toLocaleTimeString());
+          
+          setCurrentAnimals(prevAnimals => {
+            const newAnimals = { ...prevAnimals };
+            // Note: We need to use functional updates for paths too, but since they are separate states,
+            // we'll update paths below.
+            
+            data.animals.forEach((animal: AnimalData) => {
+               newAnimals[animal.animal_type] = animal;
             });
-          }
-        });
-        
-        setAnimalData(parsed);
-      });
-  }, []);
 
-  // Animation playback
-  useEffect(() => {
-    if (isPlaying && animalData.length > 0) {
-      intervalRef.current = setInterval(() => {
-        setCurrentIndex(prev => {
-          const next = prev + 1;
-          if (next >= animalData.length) {
-            return 0; // Loop back
-          }
-          return next;
-        });
-      }, 100); // Update every 100ms for smooth animation
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    }
+            return newAnimals;
+          });
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+          // Update paths
+          setAnimalPaths(prevPaths => {
+             const newPaths = { ...prevPaths };
+             data.animals.forEach((animal: AnimalData) => {
+                const pos = convertToLatLng(animal.location_x, animal.location_y);
+                
+                if (!newPaths[animal.animal_type]) {
+                    newPaths[animal.animal_type] = [];
+                }
+                
+                const path = newPaths[animal.animal_type];
+                const lastPos = path.length > 0 ? path[path.length - 1] : null;
+                
+                // Only add if position changed
+                if (!lastPos || lastPos[0] !== pos[0] || lastPos[1] !== pos[1]) {
+                    path.push(pos);
+                    // Keep last 50 points
+                    if (path.length > 50) path.shift();
+                }
+             });
+             return newPaths;
+          });
+
+        }
+      } catch (err) {
+        console.error("Error fetching live data:", err);
+        setIsConnected(false);
       }
     };
-  }, [isPlaying, animalData]);
 
-  // Update current animal positions and paths
-  useEffect(() => {
-    if (animalData.length > 0) {
-      setCurrentAnimals(() => {
-        const newAnimals: Record<string, AnimalData> = {};
-        
-        if (currentIndex === 0) {
-          // At start, show the first position of each unique animal
-          const animalFirstPositions: Record<string, AnimalData> = {};
-          animalData.forEach(data => {
-            if (!animalFirstPositions[data.animal_type]) {
-              animalFirstPositions[data.animal_type] = data;
-            }
-          });
-          
-          Object.entries(animalFirstPositions).forEach(([type, data]) => {
-            if (selectedAnimals.length === 0 || selectedAnimals.includes(type)) {
-              newAnimals[`${type}-initial`] = data;
-            }
-          });
-        } else {
-          // During animation, show recent positions (last 50 records)
-          for (let i = Math.max(0, currentIndex - 50); i <= currentIndex; i++) {
-            const data = animalData[i];
-            if (data && (selectedAnimals.length === 0 || selectedAnimals.includes(data.animal_type))) {
-              newAnimals[`${data.animal_type}-${i}`] = data;
-            }
-          }
-        }
-        
-        return newAnimals;
-      });
-      
-      // Build paths for tracking
-      if (currentIndex > 0) {
-        setAnimalPaths(() => {
-          const paths: Record<string, [number, number][]> = {};
-          
-          // Group data by animal type and build paths
-          const animalGroups: Record<string, AnimalData[]> = {};
-          for (let i = 0; i <= currentIndex; i++) {
-            const data = animalData[i];
-            if (data && (selectedAnimals.length === 0 || selectedAnimals.includes(data.animal_type))) {
-              if (!animalGroups[data.animal_type]) {
-                animalGroups[data.animal_type] = [];
-              }
-              animalGroups[data.animal_type].push(data);
-            }
-          }
-          
-          // Create path for each animal (last 20 positions)
-          Object.entries(animalGroups).forEach(([type, positions]) => {
-            const recentPositions = positions.slice(-20);
-            paths[type] = recentPositions.map(p => 
-              convertToLatLng(p.location_x, p.location_y)
-            );
-          });
-          
-          return paths;
-        });
-      }
-    }
-  }, [currentIndex, animalData, selectedAnimals]);
+    fetchData(); // Initial fetch
+    const interval = setInterval(fetchData, 2000); // 2s polling
+    
+    return () => clearInterval(interval);
+  }, []); 
 
   const getMarkerColor = (animal: AnimalData) => {
-    // Color based on activity
     if (animal.activity === 'Running' || animal.activity === 'Chasing') {
       return '#EF4444'; // Red
     } else if (animal.activity === 'Resting') {
@@ -269,11 +205,16 @@ export default function LiveTrackingMap({
       <div className="w-full h-full flex items-center justify-center bg-gray-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading map...</p>
+          <p className="text-gray-600">Connecting to satellite...</p>
         </div>
       </div>
     );
   }
+
+  // Filter animals for display
+  const displayedAnimals = Object.values(currentAnimals).filter(
+    a => selectedAnimals.length === 0 || selectedAnimals.includes(a.animal_type)
+  );
 
   return (
     <div className="relative w-full h-full">
@@ -283,13 +224,11 @@ export default function LiveTrackingMap({
         style={{ height: '100%', width: '100%' }}
         className="z-0"
       >
-        {/* Satellite imagery from Esri */}
         <TileLayer
           attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
         />
         
-        {/* Labels overlay */}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -298,6 +237,7 @@ export default function LiveTrackingMap({
 
         {/* Render animal tracking paths */}
         {Object.entries(animalPaths).map(([animalType, path]) => {
+          if (selectedAnimals.length > 0 && !selectedAnimals.includes(animalType)) return null;
           if (path.length < 2) return null;
           
           return (
@@ -315,14 +255,14 @@ export default function LiveTrackingMap({
         })}
 
         {/* Render animal markers */}
-        {Object.values(currentAnimals).map((animal, idx) => {
+        {displayedAnimals.map((animal) => {
           const position = convertToLatLng(animal.location_x, animal.location_y);
           const color = getMarkerColor(animal);
           const pinIcon = createPinIcon(color);
           
           return (
             <Marker
-              key={`${animal.animal_type}-${animal.record_id}-${idx}`}
+              key={animal.animal_type}
               position={position}
               icon={pinIcon}
             >
@@ -337,15 +277,22 @@ export default function LiveTrackingMap({
                       <h3 className="font-bold text-base">
                         {animal.animal_type}
                       </h3>
-                      <p className="text-xs text-gray-500">
-                        ID: {animal.record_id}
+                      <div className="flex items-center gap-1">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        <span className="text-xs font-semibold text-green-600">LIVE TRACKING</span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Sensor ID: {animal.record_id}
                       </p>
                     </div>
                   </div>
                   
                   <div className="space-y-1 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Activity:</span>
+                      <span className="text-gray-600">Status:</span>
                       <span className="font-semibold">{animal.activity}</span>
                     </div>
                     <div className="flex justify-between">
@@ -353,22 +300,14 @@ export default function LiveTrackingMap({
                       <span className="font-semibold">{animal.movement_speed_mps.toFixed(2)} m/s</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Temperature:</span>
+                      <span className="text-gray-600">Temp:</span>
                       <span className="font-semibold">{animal.temperature_c.toFixed(1)}°C</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Steps:</span>
-                      <span className="font-semibold">{animal.steps_taken}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Near Water:</span>
                       <span className={`font-semibold ${animal.is_near_water ? 'text-blue-600' : 'text-gray-400'}`}>
                         {animal.is_near_water ? 'Yes' : 'No'}
                       </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Time:</span>
-                      <span className="font-semibold text-xs">{animal.date} {animal.time}</span>
                     </div>
                   </div>
                 </div>
@@ -378,36 +317,20 @@ export default function LiveTrackingMap({
         })}
       </MapContainer>
 
-      {/* Status Bar */}
-      <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4 z-[1000]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="text-sm">
-              <span className="text-gray-600">Active Animals:</span>
-              <span className="ml-2 font-bold text-green-600">
-                {Object.keys(currentAnimals).length}
-              </span>
-            </div>
-            <div className="text-sm">
-              <span className="text-gray-600">Progress:</span>
-              <span className="ml-2 font-bold text-blue-600">
-                {currentIndex} / {animalData.length}
-              </span>
-            </div>
-          </div>
-          <div className="text-xs text-gray-500">
-            {isPlaying ? '▶ Playing' : '⏸ Paused'}
-          </div>
+      {/* Live Status Overlay - Right Top */}
+      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3 z-[1000] border border-green-100 flex flex-col items-end">
+        <div className="flex items-center gap-2">
+            <span className="font-bold text-sm text-gray-800">{isConnected ? 'LIVE FEED ACTIVE' : 'CONNECTING...'}</span>
+            <span className={`relative flex h-3 w-3`}>
+              {isConnected && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>}
+              <span className={`relative inline-flex rounded-full h-3 w-3 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></span>
+            </span>
         </div>
-        
-        {/* Progress Bar */}
-        <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${animalData.length > 0 ? (currentIndex / animalData.length) * 100 : 0}%` }}
-          />
+        <div className="text-[10px] text-gray-500 mt-1 font-mono">
+            UPDATED: {lastUpdated}
         </div>
       </div>
+
     </div>
   );
 }
