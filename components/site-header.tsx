@@ -15,7 +15,7 @@ export default function SiteHeader() {
             </span>
           </Link>
         </div>
-        
+
         <nav className="flex items-center gap-6">
           <Link href="/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Dashboard
@@ -25,9 +25,6 @@ export default function SiteHeader() {
           </Link>
           <Link href="/prediction" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Prediction
-          </Link>
-          <Link href="#" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-            Analytics
           </Link>
           <div className="h-4 w-px bg-border" />
           <div className="flex items-center gap-2">

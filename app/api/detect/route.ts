@@ -33,9 +33,11 @@ export async function POST(request: NextRequest) {
     const projectRoot = process.cwd()
     const pythonScript = join(projectRoot, "detect_cli.py")
     
-    // Check for venv python, fallback to system python3
-    const venvPath = join(projectRoot, "venv", "bin", "python3")
-    const pythonExe = fs.existsSync(venvPath) ? venvPath : "python3"
+    // Check for venv python, fallback to system python
+    const venvPath = process.platform === "win32"
+      ? join(projectRoot, "venv", "Scripts", "python.exe")
+      : join(projectRoot, "venv", "bin", "python3")
+    const pythonExe = fs.existsSync(venvPath) ? venvPath : (process.platform === "win32" ? "python" : "python3")
 
     // Execute detection with optional parameters
     const args = [pythonScript, tempFilePath]

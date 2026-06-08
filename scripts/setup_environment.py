@@ -27,9 +27,9 @@ def install_dependencies():
         print(f"Installing {package}...", end=" ")
         try:
             subprocess.check_call(cmd.split())
-            print("✓")
+            print("[OK]")
         except subprocess.CalledProcessError:
-            print(f"✗ Failed to install {package}")
+            print("[FAILED] Failed to install {package}")
             return False
     
     return True
@@ -43,7 +43,7 @@ def create_directories():
     
     for dir_name in dirs:
         os.makedirs(dir_name, exist_ok=True)
-        print(f"✓ Created: {dir_name}/")
+        print(f"[OK] Created: {dir_name}/")
     
     return True
 
@@ -64,9 +64,9 @@ def verify_installation():
     for module, name in modules:
         try:
             __import__(module)
-            print(f"✓ {name} installed correctly")
+            print(f"[OK] {name} installed correctly")
         except ImportError:
-            print(f"✗ {name} NOT installed")
+            print(f"[FAILED] {name} NOT installed")
             all_good = False
     
     return all_good
@@ -79,15 +79,15 @@ def main():
     print("="*60 + "\n")
     
     if not install_dependencies():
-        print("\n✗ Dependency installation failed")
+        print("\n[FAILED] Dependency installation failed")
         return False
     
     if not create_directories():
-        print("\n✗ Directory creation failed")
+        print("\n[FAILED] Directory creation failed")
         return False
     
     if not verify_installation():
-        print("\n✗ Installation verification failed")
+        print("\n[FAILED] Installation verification failed")
         return False
     
     print("\n" + "="*60)

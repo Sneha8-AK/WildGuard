@@ -31,11 +31,13 @@ export async function POST(request: NextRequest) {
 
     // Call Python prediction script
     const scriptPath = path.join(process.cwd(), "predict_api.py");
-    const venvPythonPath = path.join(process.cwd(), "venv", "bin", "python3");
+    const venvPythonPath = process.platform === "win32"
+      ? path.join(process.cwd(), "venv", "Scripts", "python.exe")
+      : path.join(process.cwd(), "venv", "bin", "python3");
 
     return new Promise((resolve) => {
-      // Use venv python if it exists, otherwise fallback to system python3
-      const pythonExe = fs.existsSync(venvPythonPath) ? venvPythonPath : "python3";
+      // Use venv python if it exists, otherwise fallback to system python
+      const pythonExe = fs.existsSync(venvPythonPath) ? venvPythonPath : (process.platform === "win32" ? "python" : "python3");
       const python = spawn(pythonExe, [scriptPath]);
 
       let dataString = "";

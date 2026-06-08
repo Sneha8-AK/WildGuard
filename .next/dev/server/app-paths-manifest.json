@@ -1,7 +1,6 @@
 {
   "/api/detect/route": "app/api/detect/route.js",
   "/api/live-tracking/route": "app/api/live-tracking/route.js",
-  "/api/predict/route": "app/api/predict/route.js",
   "/live-tracking/page": "app/live-tracking/page.js",
   "/page": "app/page.js",
   "/prediction/page": "app/prediction/page.js"

@@ -24,6 +24,7 @@ export default function Home() {
   const [selectedDetection, setSelectedDetection] = useState<Detection | null>(
     null
   );
+  const [vehicleSpeed, setVehicleSpeed] = useState(60);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleImageUpload = async (file: File) => {
@@ -31,9 +32,10 @@ export default function Home() {
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("vehicleSpeed", vehicleSpeed.toString());
 
     try {
-      console.log("Uploading file:", file.name, "Size:", file.size);
+      console.log("Uploading file:", file.name, "Speed:", vehicleSpeed);
 
       const response = await fetch("/api/detect", {
         method: "POST",
@@ -66,7 +68,7 @@ export default function Home() {
         image: URL.createObjectURL(file),
         timestamp: new Date().toLocaleTimeString(),
         detections: result.detections || [],
-        vehicleSpeed: result.vehicleSpeed || 65,
+        vehicleSpeed: result.vehicleSpeed ?? 0,
         riskLevel: result.riskLevel || "safe",
         crossingProbability: result.crossingProbability || 0,
         distanceToRoad: result.distanceToRoad || 100,
@@ -78,8 +80,7 @@ export default function Home() {
     } catch (error) {
       console.error("Error during detection:", error);
       alert(
-        `Error: ${
-          error instanceof Error ? error.message : "Unknown error occurred"
+        `Error: ${error instanceof Error ? error.message : "Unknown error occurred"
         }`
       );
     } finally {
@@ -107,7 +108,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-12">
+          <div className="mt-12 space-y-8">
             <div className="mx-auto max-w-2xl rounded-2xl bg-white p-2 shadow-xl ring-1 ring-slate-200/50 dark:bg-slate-900 dark:ring-slate-800">
               <UploadSection
                 onUpload={handleImageUpload}

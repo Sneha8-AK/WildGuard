@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import LiveTrackingMap from "@/components/LiveTrackingMap";
+import dynamic from "next/dynamic";
 import SiteHeader from "@/components/site-header";
+
+const LiveTrackingMap = dynamic(
+  () => import("@/components/LiveTrackingMap"),
+  { ssr: false }
+);
 import {
   Card,
   CardContent,

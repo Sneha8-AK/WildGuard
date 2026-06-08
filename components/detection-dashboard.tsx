@@ -84,23 +84,29 @@ export default function DetectionDashboard({ detection }: DetectionDashboardProp
             className="h-full w-full object-cover"
           />
           {/* Bounding Boxes */}
-          {hasDetections && detection.detections.map((det) => (
-            <div
-              key={det.id}
-              className="absolute border-2 border-orange-400"
-              style={{
-                left: `${det.bbox.x}px`,
-                top: `${det.bbox.y}px`,
-                width: `${det.bbox.width}px`,
-                height: `${det.bbox.height}px`,
-              }}
-            >
-              <div className="bg-orange-400 px-2 py-1 text-xs font-bold text-white">
-                {det.animal} {det.confidence.toFixed(0)}%
+          {hasDetections && detection.detections.map((det: any) => {
+            const isVehicle = det.type === "vehicle";
+            const colorClass = isVehicle ? "border-blue-500" : "border-orange-500";
+            const labelClass = isVehicle ? "bg-blue-500" : "bg-orange-500";
+
+            return (
+              <div
+                key={det.id}
+                className={`absolute border-2 ${colorClass} transition-all duration-300`}
+                style={{
+                  left: `${det.bbox.x}%`,
+                  top: `${det.bbox.y}%`,
+                  width: `${det.bbox.width}%`,
+                  height: `${det.bbox.height}%`,
+                }}
+              >
+                <div className={`absolute -top-6 left-0 ${labelClass} px-2 py-0.5 text-[10px] font-bold text-white whitespace-nowrap rounded-t-sm`}>
+                  {det.animal} {det.confidence.toFixed(0)}%
+                </div>
               </div>
-            </div>
-          ))}
-          
+            );
+          })}
+
           {/* No Detections Overlay */}
           {!hasDetections && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/50">
@@ -155,7 +161,9 @@ export default function DetectionDashboard({ detection }: DetectionDashboardProp
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-xs font-medium uppercase text-muted-foreground">Vehicle Speed</p>
-          <p className="mt-2 text-3xl font-bold text-primary">{detection.vehicleSpeed} km/h</p>
+          <p className="mt-2 text-3xl font-bold text-primary">
+            {detection.vehicleSpeed > 0 ? `${detection.vehicleSpeed} km/h` : "None"}
+          </p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-xs font-medium uppercase text-muted-foreground">Crossing Probability</p>

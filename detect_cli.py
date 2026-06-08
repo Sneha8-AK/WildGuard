@@ -13,8 +13,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, 'yolov8m.pt')
 
 # Detection Thresholds
-CONFIDENCE_THRESHOLD_ANIMAL = 0.40
-CONFIDENCE_THRESHOLD_VEHICLE = 0.60  # Higher to prevent "ghost" vehicles
+CONFIDENCE_THRESHOLD_ANIMAL = 0.35  # Slightly lowered for better recall
+CONFIDENCE_THRESHOLD_VEHICLE = 0.45 # Lowered to ensure trucks/buses are caught in forest environments
 
 # Visual References
 ROAD_Y_ESTIMATE_RATIO = 0.75  # Assumed road position in frame
@@ -26,7 +26,10 @@ WILDLIFE_MAPPING = {
     'cow': 'Gaur/Bison',
     'sheep': 'Blue Sheep',
     'horse': 'Wild Horse',
-    'bird': 'Eagle/Wild Bird'
+    'bird': 'Eagle/Wild Bird',
+    'truck': 'Heavy Vehicle',
+    'bus': 'Transport Bus',
+    'car': 'Passenger Vehicle'
 }
 
 # Risk Weights
@@ -112,6 +115,8 @@ def main():
             print(json.dumps({"error": "Failed to read image source"}))
             sys.exit(1)
             
+        h, w = image.shape[:2]
+            
         # Run detection with lower base threshold to see everything, then filter
         results = model(image, conf=0.25, verbose=False)
         
@@ -123,8 +128,7 @@ def main():
         if results and len(results) > 0:
             result = results[0]
             
-            # 1. Validate Vehicle Presence (Higher threshold to avoid ghosting)
-            # Only count vehicles with high confidence to "verify" their impact on speed
+            # 1. Validate Vehicle Presence (Lowered threshold from 0.60 to 0.45)
             for box in result.boxes:
                 cls_id = int(box.cls[0])
                 conf = float(box.conf[0])
@@ -134,47 +138,64 @@ def main():
                     vehicle_detected = True
                     break
             
-            # Determine effective speed: if no high-conf vehicle, speed MUST be 0
-            # Remove hardcoded "65" fallback.
-            effective_speed = passed_speed if vehicle_detected else 0
+            # ONLY apply speed if a vehicle is actually present in the image
+            if vehicle_detected:
+                effective_speed = passed_speed if passed_speed > 0 else 40.0
+            else:
+                effective_speed = 0
             
             assessor = RiskAssessor()
             
-            # 2. Process Animal Detections
+            # 2. Process All Relevant Detections (Animals + Vehicles)
             for idx, box in enumerate(result.boxes):
                 cls_id = int(box.cls[0])
                 conf = float(box.conf[0])
                 name = result.names[cls_id]
                 
-                # Check animal confidence
-                if name not in animal_classes or conf < CONFIDENCE_THRESHOLD_ANIMAL:
-                    continue
+                # Dynamic mapping check
+                is_animal = name in animal_classes
+                is_vehicle = name in vehicle_classes
+                
+                # Determine threshold
+                threshold = CONFIDENCE_THRESHOLD_ANIMAL if is_animal else CONFIDENCE_THRESHOLD_VEHICLE
+                
+                if (is_animal or is_vehicle) and conf >= threshold:
+                    xyxy = box.xyxy[0].cpu().numpy()
+                    x1, y1, x2, y2 = map(float, xyxy)
                     
-                xyxy = box.xyxy[0].cpu().numpy()
-                x1, y1, x2, y2 = map(float, xyxy)
-                
-                # Dynamic Risk Assessment
-                risk = assessor.assess_risk([x1, y1, x2, y2], image.shape, vehicle_speed=effective_speed)
-                
-                detections_output.append({
-                    "id": idx,
-                    "animal": get_clean_name(name),
-                    "confidence": round(conf * 100, 1),
-                    "bbox": {
-                        "x": int(x1),
-                        "y": int(y1),
-                        "width": int(x2-x1),
-                        "height": int(y2-y1)
-                    },
-                    "risk": risk
-                })
+                    # Risk assessment only applies to animals, vehicles are just markers
+                    risk = assessor.assess_risk([x1, y1, x2, y2], image.shape, vehicle_speed=effective_speed) if is_animal else None
+                    
+                    # RETURN NORMALIZED COORDINATES (0-100) instead of raw pixels
+                    # This fixes the scaling issues in the frontend
+                    detections_output.append({
+                        "id": idx,
+                        "animal": get_clean_name(name),
+                        "type": "animal" if is_animal else "vehicle",
+                        "confidence": round(conf * 100, 1),
+                        "bbox": {
+                            "x": round((x1 / w) * 100, 2),
+                            "y": round((y1 / h) * 100, 2),
+                            "width": round(((x2-x1) / w) * 100, 2),
+                            "height": round(((y2-y1) / h) * 100, 2)
+                        },
+                        "risk": risk
+                    })
 
         # Aggregate Result Calculation
         if detections_output:
-            best_risk = max(detections_output, key=lambda x: x['risk']['risk_score'])
-            risk_level = best_risk['risk']['alert_level'].lower()
-            crossing_prob = round(best_risk['risk']['crossing_probability'] * 100)
-            dist_to_road = round(best_risk['risk']['distance_to_road'] * 100)
+            # Only count animals for the main risk assessment
+            animals_only = [d for d in detections_output if d['type'] == 'animal']
+            if animals_only:
+                best_risk = max(animals_only, key=lambda x: x['risk']['risk_score'])
+                risk_level = best_risk['risk']['alert_level'].lower()
+                crossing_prob = round(best_risk['risk']['crossing_probability'] * 100)
+                dist_to_road = round(best_risk['risk']['distance_to_road'] * 100)
+            else:
+                # Only vehicles detected
+                risk_level = "safe"
+                crossing_prob = 0
+                dist_to_road = 0
         else:
             risk_level = "safe"
             crossing_prob = 0

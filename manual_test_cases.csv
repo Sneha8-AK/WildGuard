@@ -1,0 +1,45 @@
+Test Case ID,Functionality,Test Case Description,Preconditions,Test Steps,Expected Result,Pass
+TC-001,Prediction,"Verify risk prediction for valid animal data input","User is on the prediction page; model is loaded","1. Enter valid data (e.g., animal_type: 'Wolf', location_x: 450.5, speed: 9.5, activity: 'Running', temperature: 25.0, near_water: True, steps: 650, hour: 18)
+2. Click ""Predict Risk""
+3. Observe output","Risk level (Low/Medium/High), score, confidence, probability distribution, and recommendations are displayed accurately",Pass
+TC-002,Prediction,"Handle invalid or missing input data","User is on the prediction page","1. Leave required fields empty or enter invalid data (e.g., negative speed)
+2. Click ""Predict Risk""
+3. Observe response","Error message displayed; no crash; form validation prevents submission",Pass
+TC-003,Prediction,"Test prediction with edge case data (e.g., extreme values)","User is on the prediction page; model is loaded","1. Enter edge data (e.g., speed: 0, temperature: -10, steps: 0)
+2. Click ""Predict Risk""
+3. Observe output","Prediction generated without errors; appropriate risk level assigned based on model logic",Pass
+TC-004,Detection,"Upload and detect animals in an image","User is on the detection page; YOLO model is available","1. Upload a valid image containing animals (e.g., forest scene with deer)
+2. Click ""Detect""
+3. Observe results","Animals detected with bounding boxes, labels, and confidence scores; results panel updates",Pass
+TC-005,Detection,"Handle invalid file upload (e.g., non-image file)","User is on the detection page","1. Upload an invalid file (e.g., text file or corrupted image)
+2. Click ""Detect""
+3. Observe response","Error message displayed; upload rejected; no processing attempted",Pass
+TC-006,Detection,"Test detection with no animals in image","User is on the detection page; YOLO model is available","1. Upload an image with no animals (e.g., empty forest)
+2. Click ""Detect""
+3. Observe results","No detections reported; message indicates ""No animals detected""",Pass
+TC-007,Live-Tracking,"View live-tracking map and data","User is on the live-tracking page; real-time data source is active","1. Navigate to live-tracking page
+2. Observe map and data feeds
+3. Interact with map (zoom, pan)","Map displays animal locations; real-time updates shown; alerts triggered for high-risk areas",Pass
+TC-008,Live-Tracking,"Filter live-tracking data by parameters","User is on the live-tracking page; data is loaded","1. Apply filters (e.g., by animal type or risk level)
+2. Click ""Apply Filters""
+3. Observe map and list","Filtered data displayed; map updates to show only matching entries",Pass
+TC-009,UI Components,"Test upload section for file handling","User is on any page with upload component","1. Click upload button
+2. Select a file
+3. Check file preview/validation","File uploaded successfully; preview shown; validation messages for size/type",Pass
+TC-010,UI Components,"Verify dashboard responsiveness on mobile","User accesses site on mobile device","1. Resize browser or use mobile view
+2. Navigate pages
+3. Interact with forms/buttons","UI adapts; no layout breaks; all elements accessible and functional",Pass
+TC-011,UI Components,"Test alert center for displaying notifications","User is on dashboard; alerts are configured","1. Trigger an alert (e.g., via prediction)
+2. Check alert center
+3. Dismiss alert","Alert appears with details; ticker updates; dismissal works",Pass
+TC-012,UI Components,"Validate results panel for data display","User completes a prediction/detection","1. Perform action
+2. View results panel
+3. Export/share results","Results displayed clearly; export/share options functional; data accurate",Pass
+TC-013,API Integration,"Test API response for prediction endpoint","Backend server running; API accessible","1. Send POST request to /api/predict with valid JSON
+2. Check response","JSON response with prediction data; status 200; no errors",Pass
+TC-014,API Integration,"Test API error handling for invalid requests","Backend server running","1. Send invalid request (e.g., malformed JSON)
+2. Check response","Error status (400/500); appropriate error message; no server crash",Pass
+TC-015,Overall System,"End-to-end test: Full user workflow","All components running; user logged in","1. Upload data
+2. Run prediction
+3. View results
+4. Check live-tracking","Seamless flow; all functionalities integrate; results consistent across components",Pass

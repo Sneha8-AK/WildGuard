@@ -213,3 +213,4 @@ uploads/
 # package-lock.json
 # pnpm-lock.yaml
 # yarn.lock
+models/animal_behavior_model.pkl
